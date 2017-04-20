@@ -12,9 +12,11 @@ class TransporteSeeder extends Seeder
      */
     public function run()
     {
+
+        DB::table("tipo_transporte")->delete();
         //
         DB::table("tipo_transporte")->insert(array(
-            'nombre' => 'caja seca',
+            'nombre' => 'Caja seca',
             'descripcion' => 'ni idea',
         ));
 
@@ -44,7 +46,7 @@ class TransporteSeeder extends Seeder
         ));
 
         DB::table("tipo_transporte")->insert(array(
-            'nombre' => 'Furgoneta con neumáticos de conducción',
+            'nombre' => 'Furgoneta con neumÃ¡ticos de conducciÃ³n',
             'descripcion' => 'ni idea',
         ));
 

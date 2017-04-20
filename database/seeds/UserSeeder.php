@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             'apellido' => 'Carrasquel',
             'telefono' => '04148704645',
             'email' => 'enmanuel21498@gmail.com',
-            'fecha_nac' => '24/01/1994'
+            'fecha_nac' => '1994-01-24'
         ));
 
         factory(App\User::class, 60)->create([

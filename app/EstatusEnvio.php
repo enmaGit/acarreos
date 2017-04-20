@@ -14,6 +14,8 @@ class EstatusEnvio extends Model
      */
     protected $table = 'estatus_envio';
 
+    public $timestamps = true;
+
     protected $hidden = ['created_at','updated_at'];
 
 }

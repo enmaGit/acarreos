@@ -21,7 +21,7 @@ $factory->define(App\User::class, function ($faker) {
         'password' => Hash::make('123456789'),
         'telefono' => $faker->phoneNumber,
         'email' => $faker->email,
-        'fecha_nac' => str_random(10),
+        'fecha_nac' => $faker->date(),
         'remember_token' => str_random(10),
     ];
 });

@@ -14,6 +14,8 @@ class Producto extends Model
      */
     protected $table = 'productos_envio';
 
+    public $timestamps = true;
+
     /**
      * The attributes that are mass assignable.
      *

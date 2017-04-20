@@ -8,6 +8,8 @@ class Transporte extends Model
 {
     protected $table = 'user_transporte';
 
+    public $timestamps = true;
+
     protected $hidden = ['created_at','updated_at'];
 
     protected $fillable = ['condicion'];

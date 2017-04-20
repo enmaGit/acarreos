@@ -11,6 +11,8 @@ class UserTransporteSeeder extends Seeder
      */
     public function run()
     {
+
+        DB::table("user_transporte")->delete();
         //
         factory(App\User::class, 3)
             ->create()

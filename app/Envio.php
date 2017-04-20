@@ -14,6 +14,8 @@ class Envio extends Model
      */
     protected $table = 'envios';
 
+    public $timestamps = true;
+
     /**
      * The attributes that are mass assignable.
      *

@@ -12,9 +12,11 @@ class ProductoSeeder extends Seeder
      */
     public function run()
     {
+
+        DB::table("productos")->delete();
         //
         DB::table("productos")->insert(array(
-            'nombre' => 'Artículos del hogar',
+            'nombre' => 'ArtÃ­culos del hogar',
             'descripcion' => 'ni idea',
             'comision' => '15',
             'dias_puja' => '7',
@@ -28,7 +30,7 @@ class ProductoSeeder extends Seeder
         ));
 
         DB::table("productos")->insert(array(
-            'nombre' => 'Vehículos',
+            'nombre' => 'Vehï¿½culos',
             'descripcion' => 'ni idea',
             'comision' => '15',
             'dias_puja' => '7',
@@ -77,7 +79,7 @@ class ProductoSeeder extends Seeder
         ));
 
         DB::table("productos")->insert(array(
-            'nombre' => 'Mercancías industriales y de negocio',
+            'nombre' => 'MercancÃ­as industriales y de negocio',
             'descripcion' => 'ni idea',
             'comision' => '15',
             'dias_puja' => '7',
@@ -98,7 +100,7 @@ class ProductoSeeder extends Seeder
         ));
 
         DB::table("productos")->insert(array(
-            'nombre' => 'Camión con carga completa',
+            'nombre' => 'Camiï¿½n con carga completa',
             'descripcion' => 'ni idea',
             'comision' => '15',
             'dias_puja' => '7',

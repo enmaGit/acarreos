@@ -13,6 +13,8 @@ class Ubicacion extends Model
      */
     protected $table = 'ubicacion_envio';
 
+    public $timestamps = true;
+
     /**
      * The attributes that are mass assignable.
      *

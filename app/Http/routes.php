@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Redirect;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 Route::get('/', function () {
-    return view('welcome');
+  phpinfo();
 });
 
 Route::post('/home', function () {
@@ -46,8 +46,8 @@ Route::post('/home', function () {
 
 Route::group(['prefix' => 'api/v1'], function () {
 
-    //TODO añadir parámetros de búsqueda a user para buscar clientes y trans
-    //TODO añadir parámetros de búsquedas a los envíos
+    //TODO aï¿½adir parï¿½metros de bï¿½squeda a user para buscar clientes y trans
+    //TODO aï¿½adir parï¿½metros de bï¿½squedas a los envï¿½os
 
     //Route::group(['middleware' => 'jwt.refresh'], function () {
 
@@ -106,5 +106,3 @@ Route::group(['prefix' => 'api/v1'], function () {
     Route::post('auth/register', ['as' => 'register', 'uses' => 'Auth\AuthController@postRegister']);
 
 });
-
-

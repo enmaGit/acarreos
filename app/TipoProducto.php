@@ -14,6 +14,8 @@ class TipoProducto extends Model
      */
     protected $table = 'productos';
 
+    public $timestamps = true;
+
     /**
      * The attributes that are mass assignable.
      *

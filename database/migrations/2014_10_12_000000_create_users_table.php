@@ -17,7 +17,8 @@ class CreateUsersTable extends Migration
         Schema::create('tipo_usuario', function (Blueprint $table) {
             $table->increments('id');
             $table->string("descripcion", 30);
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
         });
 
         Schema::create('users', function (Blueprint $table) {
@@ -34,7 +35,8 @@ class CreateUsersTable extends Migration
             $table->enum('estatus', ['activo', "bloqueado"])
                 ->default("activo");
             $table->rememberToken();
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
 
             $table->foreign("tipo_user_id")
                 ->references("id")
@@ -46,7 +48,8 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->string("nombre");
             $table->text("descripcion");
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
         });
 
         Schema::create('user_transporte', function (Blueprint $table) {
@@ -55,7 +58,8 @@ class CreateUsersTable extends Migration
             $table->integer('transporte_id')->unsigned();
             $table->text("condicion");
             $table->string("foto", 120)->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
 
             $table->foreign("user_id")
                 ->references("id")
@@ -74,14 +78,16 @@ class CreateUsersTable extends Migration
             $table->text("descripcion");
             $table->integer('comision');
             $table->integer('dias_puja');
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
 
         });
 
         Schema::create('carrier_producto', function (Blueprint $table) {
             $table->integer('transpor_id')->unsigned();
             $table->integer('producto_id')->unsigned();
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
 
             $table->foreign("producto_id")
                 ->references("id")
@@ -98,7 +104,8 @@ class CreateUsersTable extends Migration
         Schema::create('estatus_envio', function (Blueprint $table) {
             $table->increments('id');
             $table->string("descripcion", 30);
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
 
         });
 
@@ -116,7 +123,8 @@ class CreateUsersTable extends Migration
             $table->date("fecha_res")->nullable();
             $table->date("fecha_fin")->nullable();
             $table->integer("valoracion")->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
 
             $table->foreign("user_id")
                 ->references("id")
@@ -139,7 +147,8 @@ class CreateUsersTable extends Migration
             $table->float("ancho");
             $table->float("alto");
             $table->float("peso");
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
 
             $table->foreign("envio_id")
                 ->references("id")
@@ -158,7 +167,8 @@ class CreateUsersTable extends Migration
             $table->double('latitud');
             $table->double("longitud");
             $table->date("fecha_update")->default(Carbon::now());
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
 
             $table->foreign("envio_id")
                 ->references("id")
@@ -177,7 +187,8 @@ class CreateUsersTable extends Migration
             $table->time("hora_llegada");
             $table->date("fecha_salida");
             $table->date("fecha_llegada");
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
 
             $table->foreign("envio_id")
                 ->references("id")
