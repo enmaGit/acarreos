@@ -11,7 +11,9 @@
     "php": ">=5.5.9",
     "laravel/framework": "5.1.*",
     "tymon/jwt-auth": "0.5.*",
-    "doctrine/dbal": "v2.4.2"
+    "doctrine/dbal": "v2.4.2",
+    "guzzlehttp/guzzle": "~6.0",
+    "prettus/laravel-request-logger": "^1.0"
   },
   "require-dev": {
     "fzaninotto/faker": "~1.4",
@@ -29,7 +31,6 @@
   },
   "autoload-dev": {
     "classmap": [
-      "tests/TestCase.php"
     ]
   },
   "scripts": {

@@ -115,7 +115,11 @@ class UserController extends Controller
         return Validator::make($data, [
             'nombre' => 'max:255',
             'apellido' => 'max:255',
-            'email' => 'email|max:255|unique:users',
+            'email' => 'email|max:255|unique:users,email,' . $data['id'],
+            'tipo_dni' => 'max:255',
+            'dni' => 'max:255|unique:users,dni,' . $data['id'],
+            'tipo_licencia' => 'max:255',
+            'num_seguridad' => 'max:255|unique:users,num_seguridad,' . $data['id'],
             'password' => 'min:6',
         ]);
     }
@@ -131,7 +135,11 @@ class UserController extends Controller
         return Validator::make($data, [
             'nombre' => 'required|max:255',
             'apellido' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
+            'email' => 'required|email|max:255|unique:users,email,' . $data['id'],
+            'tipo_dni' => 'required|max:255',
+            'dni' => 'required|max:255|unique:users,dni,' . $data['id'],
+            'tipo_licencia' => 'required|max:255',
+            'num_seguridad' => 'required|max:255|unique:users,num_seguridad,' . $data['id'],
             'password' => 'required|min:6',
             'telefono' => 'required',
             'fecha_nac' => 'required',
@@ -174,6 +182,12 @@ class UserController extends Controller
                 $email = $request->input('email');
                 $fecha_nac = $request->input('fecha_nac');
                 $estatus = $request->input('estatus');
+                $id_push = $request->input('id_push');
+                $tipo_dni = $request->input('tipo_dni');
+                $dni = $request->input('dni');
+                $tipo_licencia = $request->input('tipo_licencia');
+                $num_seguridad = $request->input('num_seguridad');
+
 
                 $modificado = false;
 
@@ -204,6 +218,31 @@ class UserController extends Controller
 
                 if ($fecha_nac) {
                     $user->fecha_nac = $fecha_nac;
+                    $modificado = true;
+                }
+
+                if ($id_push) {
+                    $user->id_push = $id_push;
+                    $modificado = true;
+                }
+
+                if ($tipo_dni) {
+                    $user->tipo_dni = $tipo_dni;
+                    $modificado = true;
+                }
+
+                if ($dni) {
+                    $user->dni = $dni;
+                    $modificado = true;
+                }
+
+                if ($tipo_licencia) {
+                    $user->tipo_licencia = $tipo_licencia;
+                    $modificado = true;
+                }
+
+                if ($num_seguridad) {
+                    $user->num_seguridad = $num_seguridad;
                     $modificado = true;
                 }
 

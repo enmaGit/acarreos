@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="acarreos.com.pa">
+    <serverData>
+      <paths name="acarreos.com.pa">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath path="/vendor/bin" />
+            <excludedPath path="/vendor/classpreloader" />
+            <excludedPath path="/vendor/composer" />
+            <excludedPath path="/vendor/danielstjules" />
+            <excludedPath path="/vendor/dnoegel" />
+            <excludedPath path="/vendor/doctrine" />
+            <excludedPath path="/vendor/fzaninotto" />
+            <excludedPath path="/vendor/hamcrest" />
+            <excludedPath path="/vendor/jakub-onderka" />
+            <excludedPath path="/vendor/jeremeamia" />
+            <excludedPath path="/vendor/laravel" />
+            <excludedPath path="/vendor/league" />
+            <excludedPath path="/vendor/mockery" />
+            <excludedPath path="/vendor/monolog" />
+            <excludedPath path="/vendor/mtdowling" />
+            <excludedPath path="/vendor/namshi" />
+            <excludedPath path="/vendor/nesbot" />
+            <excludedPath path="/vendor/nikic" />
+            <excludedPath path="/vendor/phpdocumentor" />
+            <excludedPath path="/vendor/phpseclib" />
+            <excludedPath path="/vendor/phpspec" />
+            <excludedPath path="/vendor/phpunit" />
+            <excludedPath path="/vendor/psr" />
+            <excludedPath path="/vendor/psy" />
+            <excludedPath path="/vendor/sebastian" />
+            <excludedPath path="/vendor/swiftmailer" />
+            <excludedPath path="/vendor/symfony" />
+            <excludedPath path="/vendor/vlucas" />
+            <excludedPath path="/tests" />
+            <excludedPath path="/resources" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/bin" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/classpreloader" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/composer" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/danielstjules" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/dnoegel" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/doctrine" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/fzaninotto" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/hamcrest" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/jakub-onderka" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/jeremeamia" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/laravel" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/league" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/mockery" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/monolog" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/mtdowling" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/namshi" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/nesbot" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/nikic" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/phpdocumentor" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/phpseclib" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/phpspec" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/phpunit" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/psr" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/psy" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/sebastian" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/swiftmailer" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/symfony" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor/vlucas" />
+            <excludedPath local="true" path="$PROJECT_DIR$/tests" />
+            <excludedPath local="true" path="$PROJECT_DIR$/resources" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

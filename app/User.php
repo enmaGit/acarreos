@@ -21,14 +21,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     protected $table = 'users';
 
-    public $timestamps = true;
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['login', 'email', 'password', 'nombre', 'apellido', 'telefono', 'foto', 'fecha_nac', ''];
+    protected $fillable = ['login', 'email', 'password', 'nombre', 'apellido', 'telefono', 'foto', 'fecha_nac', 'id_push', 'tipo_dni', 'dni', 'tipo_licencia', 'num_seguridad'];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -77,6 +75,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\Ofera', 'transpor_id', 'id');
     }
 
+    public function notificaciones()
+    {
+        return $this->hasMany('App\Notificacion', 'user_id', 'id');
+    }
+
     public function puedeOfertar($idEnvio)
     {
         $productosUser = $this->productos()->lists('id');
@@ -113,11 +116,19 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return ($sum / $cont);
     }
 
+    public function getEnviosRealizadosAttribute()
+    {
+        return Envio::whereHas('ofertas', function ($query) {
+            $query->where('ganador', 1)->where('transpor_id', $this->id);
+        })->where('estatus_id', Config::get('constants.ESTATUS_FINALIZADO'))->count();
+    }
+
     public function toArray()
     {
         $array = parent::toArray();
         if ($this->isATransportist() || $this->isAnAdmin()) {
             $array['valoracion'] = $this->getValoracionAttribute();
+            $array['envios_realizados'] = $this->getEnviosRealizadosAttribute();
         }
         return $array;
     }

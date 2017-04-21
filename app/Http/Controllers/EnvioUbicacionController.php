@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -28,7 +29,7 @@ class EnvioUbicacionController extends Controller
      */
     public function index($idEnvio)
     {
-        //
+        //TODO revisar esta loquera
         $userLogged = $this->getAuthenticatedUser();
         $envio = Envio::find($idEnvio);
 
@@ -40,10 +41,11 @@ class EnvioUbicacionController extends Controller
         }
 
         if (!$envio->ganador()) {
-            $error = array(
+            /*$error = array(
                 'error' => 'Envio no valido'
             );
-            return response()->json($error, 404);
+            return response()->json($error, 403);*/
+            return response()->json(array(), 200);
         }
 
         $idCliente = $envio->user->id;
@@ -52,6 +54,8 @@ class EnvioUbicacionController extends Controller
         if ($userLogged->isAnAdmin() || $userLogged->id == $idCliente || $userLogged->id == $idTransportista) {
             return response()->json($envio->ubicaciones, 200);
         }
+
+
         return response()->json(['error' => 'Unauthorized_User'], 403);
     }
 
@@ -106,9 +110,18 @@ class EnvioUbicacionController extends Controller
 
             $ubicacion = new Ubicacion();
             $ubicacion->fill($request->all());
-            $envio->ubicaciones()->save($ubicacion);
+            $ubicacion->fecha_update = Carbon::now();
+            $ubicacion = $envio->ubicaciones()->save($ubicacion);
+            $notification = new \App\Helpers\PushHandler;
+            $data = ['msg' => 'Han actualizado la ubicacion',
+                'tipo' => Config::get('constants.NOTIF_ACT_UBICACION'),
+                'envio' => Envio::with(array('user' => function ($query) {
+                    $query->select('id', 'login');
+                }))
+                    ->with('estatus')->find($envio->id)->toJson()];
+            $notification->generatePush($envio->user, $data);
 
-            return Response::make(json_encode($ubicacion), 201)->header('Location', 'http://acarreos.app/api/v1/envio/' . $idEnvio . '/ubicacion')->header('Content-Type', 'application/json');
+            return Response::make(Ubicacion::find($ubicacion->id)->toJson(), 201)->header('Location', 'http://acarreos.app/api/v1/envio/' . $idEnvio . '/ubicacion')->header('Content-Type', 'application/json');
         }
         return response()->json(['error' => 'Unauthorized_User'], 403);
     }

@@ -12,9 +12,9 @@ class TransporteSeeder extends Seeder
      */
     public function run()
     {
-
-        DB::table("tipo_transporte")->delete();
         //
+        DB::table("tipo_transporte")->delete();
+
         DB::table("tipo_transporte")->insert(array(
             'nombre' => 'Caja seca',
             'descripcion' => 'ni idea',

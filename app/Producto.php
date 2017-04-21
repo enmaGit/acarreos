@@ -14,16 +14,14 @@ class Producto extends Model
      */
     protected $table = 'productos_envio';
 
-    public $timestamps = true;
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['cantidad', 'largo', 'ancho', 'alto', 'peso', 'producto_id'];
+    protected $fillable = ['cantidad', 'largo', 'ancho', 'alto', 'peso', 'descripcion', 'producto_id'];
 
-    protected $hidden = ['created_at','updated_at'];
+    protected $hidden = ['created_at', 'updated_at'];
 
     public function tipoProducto()
     {

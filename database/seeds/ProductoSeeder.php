@@ -12,105 +12,82 @@ class ProductoSeeder extends Seeder
      */
     public function run()
     {
-
-        DB::table("productos")->delete();
         //
         DB::table("productos")->insert(array(
-            'nombre' => 'Artículos del hogar',
+            'nombre' => 'Mercancía',
             'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
+            'comision' => '10',
+            'dias_puja' => '3',
         ));
 
         DB::table("productos")->insert(array(
-            'nombre' => 'Mudanzas',
+            'nombre' => 'Mudanza',
             'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
+            'comision' => '10',
+            'dias_puja' => '3',
         ));
 
         DB::table("productos")->insert(array(
-            'nombre' => 'Veh�culos',
+            'nombre' => 'Vehículo / Moto',
             'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
+            'comision' => '10',
+            'dias_puja' => '3',
         ));
 
         DB::table("productos")->insert(array(
             'nombre' => 'Botes',
             'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
+            'comision' => '10',
+            'dias_puja' => '3',
+        ));
+
+        DB::table("productos")->insert(array(
+            'nombre' => 'Vidrios/ Ventanas',
+            'descripcion' => 'ni idea',
+            'comision' => '10',
+            'dias_puja' => '3',
         ));
 
         DB::table("productos")->insert(array(
             'nombre' => 'Cuidado especial',
             'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
+            'comision' => '10',
+            'dias_puja' => '3',
         ));
 
         DB::table("productos")->insert(array(
             'nombre' => 'Mascotas',
             'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
+            'comision' => '10',
+            'dias_puja' => '3',
         ));
 
         DB::table("productos")->insert(array(
             'nombre' => 'Alimentos y agricultura',
             'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
+            'comision' => '10',
+            'dias_puja' => '3',
         ));
 
         DB::table("productos")->insert(array(
-            'nombre' => 'Motos',
+            'nombre' => 'Carga consolidada (TLT)',
             'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
+            'comision' => '10',
+            'dias_puja' => '3',
         ));
 
         DB::table("productos")->insert(array(
-            'nombre' => 'Maquinaria pesada',
+            'nombre' => 'Caballos/ Ganado',
             'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
-        ));
-
-        DB::table("productos")->insert(array(
-            'nombre' => 'Mercancías industriales y de negocio',
-            'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
-        ));
-
-        DB::table("productos")->insert(array(
-            'nombre' => 'Carga consolidada (LTL)',
-            'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
-        ));
-
-        DB::table("productos")->insert(array(
-            'nombre' => 'Caballos y ganado',
-            'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
-        ));
-
-        DB::table("productos")->insert(array(
-            'nombre' => 'Cami�n con carga completa',
-            'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
+            'comision' => '10',
+            'dias_puja' => '3',
         ));
 
         DB::table("productos")->insert(array(
             'nombre' => 'Otros',
             'descripcion' => 'ni idea',
-            'comision' => '15',
-            'dias_puja' => '7',
+            'comision' => '10',
+            'dias_puja' => '3',
         ));
     }
 }

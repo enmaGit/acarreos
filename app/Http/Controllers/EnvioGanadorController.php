@@ -94,6 +94,19 @@ class EnvioGanadorController extends Controller
             $envio->estatus_id = Config::get('constants.ESTATUS_DESARROLLO');
             $oferta->save();
             $envio->save();
+            $notification = new \App\Helpers\PushHandler;
+            $data = ['msg' => 'Su oferta ha sido aceptada',
+                'tipo' => Config::get('constants.NOTIF_OFERTA_ACEPTADA'),
+                'envio' => Envio::with(array('user' => function ($query) {
+                    $query->select('id', 'login');
+                }))
+                    ->with('estatus')->with('ofertas')->find($envio->id)->toJson()];
+            $ofertas = $envio->ofertas;
+
+            foreach ($ofertas as $oferta) {
+                if ($oferta->transportista->id != $userLogged->id)
+                    $notification->generatePush($oferta->transportista, $data);
+            }
             return response()->json(['mensaje' => 'Guardado exitoso'], 200);
         }
         return response()->json(['error' => 'Unauthorized_User'], 403);

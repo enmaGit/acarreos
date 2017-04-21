@@ -15,8 +15,6 @@ class Oferta extends Model
      */
     protected $table = 'ofertas';
 
-    public $timestamps = true;
-
     /**
      * The attributes that are mass assignable.
      *

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Carbon\Carbon;
 
 class EnvioOfertaController extends Controller
 {
@@ -94,11 +95,11 @@ class EnvioOfertaController extends Controller
                 $parameters['transpor_id'] = $request->input('transpor_id');
             }
 
-            if ($userLogged->isATransportist()) {
+            /*if ($userLogged->isATransportist()) {
                 if (!$userLogged->puedeOfertar($idEnvio)) {
                     return response()->json(['error' => 'No puede ofertar a este envio'], 400);
                 }
-            }
+            }*/
 
             $rules = array(
                 'hora_salida' => array('required', 'regex:/^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/'),
@@ -117,12 +118,33 @@ class EnvioOfertaController extends Controller
             }
 
             $oferta = new Oferta();
-            $oferta->fill($request->all());
+            $oferta->hora_salida = $request->input('hora_salida');
+            $oferta->fecha_salida = $request->input('fecha_salida');
+            $oferta->hora_llegada = $request->input('hora_llegada');
+            $oferta->fecha_puja = Carbon::now();
+            $oferta->fecha_llegada = $request->input('fecha_llegada');
+            $oferta->precio_puja = $request->input('precio_puja');
             $oferta->transpor_id = $idUsuario;
             if ($userLogged->isAnAdmin()) {
                 $oferta->transpor_id = $request->input('transpor_id');
             }
             $envio->ofertas()->save($oferta);
+
+            $notification = new \App\Helpers\PushHandler;
+            $data = ['msg' => 'Han ofertado a su envio',
+                'tipo' => Config::get('constants.NOTIF_NUEVA_OFERTA'),
+                'envio' => Envio::with(array('user' => function ($query) {
+                    $query->select('id', 'login');
+                }))
+                    ->with('estatus')->with('ofertas')->find($envio->id)->toJson()];
+
+            $ofertas = $envio->ofertas;
+
+            foreach ($ofertas as $oferta) {
+                if ($oferta->transportista->id != $userLogged->id)
+                    $notification->generatePush($oferta->transportista, $data);
+            }
+            $notification->generatePush($envio->user, $data);
 
             return Response::make(json_encode($oferta), 201)->header('Location', 'http://acarreos.app/api/v1/envio/' . $idEnvio . '/oferta' . $oferta->id)->header('Content-Type', 'application/json');
 
@@ -253,6 +275,22 @@ class EnvioOfertaController extends Controller
             }
 
             $oferta->save();
+
+            $notification = new \App\Helpers\PushHandler;
+            $data = ['msg' => 'Han ofertado a su envio',
+                'tipo' => Config::get('constants.NOTIF_NUEVA_OFERTA'),
+                'envio' => Envio::with(array('user' => function ($query) {
+                    $query->select('id', 'login');
+                }))
+                    ->with('estatus')->with('ofertas')->find($envio->id)->toJson()];
+
+            $ofertas = $envio->ofertas;
+
+            foreach ($ofertas as $oferta) {
+                if ($oferta->transportista->id != $userLogged->id)
+                    $notification->generatePush($oferta->transportista, $data);
+            }
+            $notification->generatePush($envio->user, $data);
 
             return response()->json($oferta, 200);
         }

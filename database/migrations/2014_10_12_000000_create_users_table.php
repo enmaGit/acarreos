@@ -15,6 +15,7 @@ class CreateUsersTable extends Migration
     {
 
         Schema::create('tipo_usuario', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string("descripcion", 30);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
@@ -22,6 +23,7 @@ class CreateUsersTable extends Migration
         });
 
         Schema::create('users', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer("tipo_user_id")->unsigned();
             $table->string("login")->unique();
@@ -45,6 +47,7 @@ class CreateUsersTable extends Migration
         });
 
         Schema::create('tipo_transporte', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string("nombre");
             $table->text("descripcion");
@@ -53,6 +56,7 @@ class CreateUsersTable extends Migration
         });
 
         Schema::create('user_transporte', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->integer('transporte_id')->unsigned();
@@ -73,6 +77,7 @@ class CreateUsersTable extends Migration
         });
 
         Schema::create('productos', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string("nombre");
             $table->text("descripcion");
@@ -84,6 +89,7 @@ class CreateUsersTable extends Migration
         });
 
         Schema::create('carrier_producto', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->integer('transpor_id')->unsigned();
             $table->integer('producto_id')->unsigned();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
@@ -102,6 +108,7 @@ class CreateUsersTable extends Migration
         });
 
         Schema::create('estatus_envio', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string("descripcion", 30);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
@@ -110,14 +117,17 @@ class CreateUsersTable extends Migration
         });
 
         Schema::create('envios', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer("user_id")->unsigned();
             $table->integer('estatus_id')->unsigned()->default(1);
             $table->string('short_descripcion')->default('Envio sin titulo');
             $table->double("lat_origen");
             $table->double("lon_origen");
+            $table->string('ref_origen')->default('Sin referencia de origen');
             $table->double("lat_destino");
             $table->double("lon_destino");
+            $table->string('ref_destino')->default('Sin referencia de destino');
             $table->integer("max_dias");
             $table->date("fecha_pub")->default(Carbon::now());
             $table->date("fecha_res")->nullable();
@@ -139,6 +149,7 @@ class CreateUsersTable extends Migration
         });
 
         Schema::create('productos_envio', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('envio_id')->unsigned();
             $table->integer('producto_id')->unsigned();
@@ -147,6 +158,7 @@ class CreateUsersTable extends Migration
             $table->float("ancho");
             $table->float("alto");
             $table->float("peso");
+            $table->string("foto", 120)->nullable();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
 
@@ -162,6 +174,7 @@ class CreateUsersTable extends Migration
         });
 
         Schema::create('ubicacion_envio', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('envio_id')->unsigned();
             $table->double('latitud');
@@ -176,7 +189,27 @@ class CreateUsersTable extends Migration
                 ->onDelete("cascade");
         });
 
+        Schema::create('transporte_envio', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->increments('id');
+            $table->integer('envio_id')->unsigned();
+            $table->integer('transporte_id')->unsigned();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+
+            $table->foreign("envio_id")
+                ->references("id")
+                ->on("envios")
+                ->onDelete("cascade");
+
+            $table->foreign("transporte_id")
+                ->references("id")
+                ->on("tipo_transporte")
+                ->onDelete("cascade");
+        });
+
         Schema::create('ofertas', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('envio_id')->unsigned();
             $table->integer('transpor_id')->unsigned();
@@ -199,6 +232,7 @@ class CreateUsersTable extends Migration
                 ->references("id")
                 ->on("users")
                 ->onDelete("cascade");
+
         });
     }
 
@@ -210,6 +244,7 @@ class CreateUsersTable extends Migration
     public function down()
     {
         Schema::drop('ofertas');
+        Schema::drop('transporte_envio');
         Schema::drop('ubicacion_envio');
         Schema::drop('productos_envio');
         Schema::drop('envios');

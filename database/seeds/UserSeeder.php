@@ -24,6 +24,17 @@ class UserSeeder extends Seeder
 
         \DB::table("users")->insert(array(
             'tipo_user_id' => '1',
+            'login' => 'acarreospanama',
+            'password' => Hash::make('Adelle1989'),
+            'nombre' => 'Christian',
+            'apellido' => 'Cedeño',
+            'telefono' => '77777777',
+            'email' => 'christian.ernesto.c@gmail.com',
+            'fecha_nac' => '1994-01-24'
+        ));
+
+        \DB::table("users")->insert(array(
+            'tipo_user_id' => '1',
             'login' => 'enmanuel21498',
             'password' => Hash::make('123456789'),
             'nombre' => 'Enmanuel',

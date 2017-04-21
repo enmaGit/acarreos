@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', false),
+    'debug' => env('APP_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -148,6 +148,8 @@ return [
          * Application Authenticate...
          */
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+
+        'Prettus\RequestLogger\Providers\LoggerServiceProvider',
 
     ],
 

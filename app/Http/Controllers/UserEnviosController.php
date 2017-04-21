@@ -5,14 +5,18 @@ namespace App\Http\Controllers;
 use App\Envio;
 use App\EstatusEnvio;
 use App\Producto;
+use App\TipoTransporte;
 use App\User;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Carbon\Carbon;
 
 class UserEnviosController extends Controller
 {
@@ -38,6 +42,26 @@ class UserEnviosController extends Controller
             return response()->json($error, 404);
         }
         //Filtrar por estatus
+        if ($user->isATransportist()) {
+            //TODO devolver los envios donde el transpor es el ganador
+            if ($request->has('estatus')) {
+                $estatus = $request->input('estatus');
+                $listaDeEstatus = explode(',', $estatus);
+                $envios = Envio::whereHas('ofertas', function ($query) use ($user) {
+                    $query->where('transpor_id', $user->id)
+                        ->where('ganador', true);
+                })
+                    ->whereIn('estatus_id', $listaDeEstatus)
+                    ->with(array('user' => function ($query) {
+                        $query->select('id', 'login');
+                    }))
+                    ->with('estatus')
+                    ->with('ofertas')
+                    ->orderBy('fecha_pub', 'desc')
+                    ->simplePaginate(10);
+                return response()->json($envios->items(), 200);
+            }
+        }
         if ($request->has('estatus')) {
             $estatus = $request->input('estatus');
             $listaDeEstatus = explode(',', $estatus);
@@ -48,6 +72,7 @@ class UserEnviosController extends Controller
                 }))
                 ->with('estatus')
                 ->with('ofertas')
+                ->orderBy('fecha_pub', 'desc')
                 ->simplePaginate(10);
             return response()->json($envios->items(), 200);
         }
@@ -82,10 +107,15 @@ class UserEnviosController extends Controller
             $validator = Validator::make($parameters, [
                 'short_descripcion' => 'required|max:50',
                 'productos' => 'array',
+                'transportes' => 'array',
                 'lat_origen' => 'required|numeric',
                 'lon_origen' => 'required|numeric',
+                'ref_origen' => 'required',
                 'lat_destino' => 'required|numeric',
                 'lon_destino' => 'required|numeric',
+                'ref_destino' => 'required',
+                'fecha_sug' => 'required|date',
+                'hora_sug' => array('required', 'regex:/^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/'),
                 'max_dias' => 'integer',
                 'user_id' => 'required|exists:users,id,tipo_user_id,2'
             ]);
@@ -96,6 +126,7 @@ class UserEnviosController extends Controller
             }
 
             $productos = $request->input('productos');
+            $transportes = $request->input('transportes');
 
             /*if (sizeof($productos) < ) {
                 return response()->json(['error' => 'Should have at least one product'], 400);
@@ -103,10 +134,16 @@ class UserEnviosController extends Controller
 
             $user = User::find($idUsuario);
             $envio = new Envio();
+            $envio->short_descripcion = $parameters['short_descripcion'];
             $envio->lat_origen = $parameters['lat_origen'];
             $envio->lon_origen = $parameters['lon_origen'];
+            $envio->fecha_pub = Carbon::now();
+            $envio->ref_origen = $parameters['ref_origen'];
             $envio->lat_destino = $parameters['lat_destino'];
             $envio->lon_destino = $parameters['lon_destino'];
+            $envio->ref_destino = $parameters['ref_destino'];
+            $envio->fecha_sug = $parameters['fecha_sug'];
+            $envio->hora_sug = $parameters['hora_sug'];
             if ($request->has('max_dias')) {
                 $envio->max_dias = $parameters['max_dias'];
             }
@@ -129,6 +166,20 @@ class UserEnviosController extends Controller
                 }
             }
 
+            //TODO hacer la validacion de los transportes
+            if (is_array($transportes)) {
+                foreach ($transportes as $transporte) {
+                    $validator = Validator::make($transporte, [
+                        'id' => 'required|exists:tipo_transporte,id'
+                    ]);
+
+                    if ($validator->fails()) {
+                        $messages = $validator->errors();
+                        return response()->json(['error' => $messages], 400);
+                    }
+                }
+            }
+
 
             $nuevoEnvio = $user->envios()->save($envio);
 
@@ -142,7 +193,21 @@ class UserEnviosController extends Controller
                 }
             }
 
-            $nuevoEnvio = Envio::where('id',$nuevoEnvio->id)->with('estatus')->first();
+
+            if (is_array($transportes)) {
+                foreach ($transportes as $transporteInfo) {
+                    $transporte = TipoTransporte::find($transporteInfo['id']);
+                    $nuevoEnvio->transportes()->save($transporte);
+                }
+            }
+
+            $nuevoEnvio = Envio::where('id', $nuevoEnvio->id)
+                ->with(array('user' => function ($query) {
+                    $query->select('id', 'login');
+                }))
+                ->with('estatus')
+                ->with('ofertas')
+                ->first();
 
 
             return Response::make(json_encode($nuevoEnvio), 201)->header('Location', 'http://acarreos.app/api/v1/cliente/' . $idUsuario . '/envio' . $nuevoEnvio->id)->header('Content-Type', 'application/json');
@@ -184,6 +249,75 @@ class UserEnviosController extends Controller
     {
         //
         $userLogged = $this->getAuthenticatedUser();
+        $parameters = array();
+        $parameters['user_id'] = $idUsuario;
+        $parameters['envio_id'] = $idEnvio;
+        $validator = Validator::make($parameters, [
+            'envio_id' => 'required|exists:envios,id,user_id,' . $idUsuario,
+            'user_id' => 'required|exists:users,id,tipo_user_id,2'
+        ]);
+
+        if ($validator->fails()) {
+            $messages = $validator->errors();
+            return response()->json(['error' => $messages], 404);
+        }
+
+        $envio = Envio::with('user')->find($idEnvio);
+        $valoracionIni = $envio->valoracion;
+        if ($valoracionIni == null) {
+            $valoracionIni = -1;
+        }
+
+
+        if ($userLogged->isATransportist()) {
+            $parameters = array();
+            $parameters['user_id'] = $idUsuario;
+            $parameters['envio_id'] = $idEnvio;
+            $validator = Validator::make($parameters, [
+                'envio_id' => 'required|exists:envios,id,user_id,' . $idUsuario,
+                'user_id' => 'required|exists:users,id,tipo_user_id,2'
+            ]);
+
+            if ($validator->fails()) {
+                $messages = $validator->errors();
+                return response()->json(['error' => $messages], 404);
+            }
+
+            $envio = Envio::with('user')->find($idEnvio);
+
+            if ($envio->ganador() != null) {
+                $ofertaGanadora = $envio->ganador();
+                if ($ofertaGanadora->transportista->id == $userLogged->id) {
+                    $validator = Validator::make($request->all(), [
+                        'estatus_id' => 'exists:estatus_envio,id'
+                    ]);
+                    if ($validator->fails()) {
+                        $messages = $validator->errors();
+                        return response()->json(['error' => $messages], 404);
+                    }
+
+                    $estatus = $request->input('estatus_id');
+                    if ($estatus == Config::get('constants.ESTATUS_FINALIZADO')) {
+                        $envio->estatus_id = $estatus;
+                        $envio->save();
+                        $notification = new \App\Helpers\PushHandler;
+                        $data = ['msg' => 'Su paquete ha llegado al destino',
+                            'tipo' => Config::get('constants.NOTIF_ENVIO_FINALIZADO'),
+                            'envio' => $envio->toJson()];
+                        $notification->generatePush($envio->user, $data);
+                        return response()->json(compact('envio'), 200);
+                    } else {
+                        return response()->json(['error' => 'Unauthorized_User1'], 403);
+                    }
+
+                } else {
+                    return response()->json(['error' => 'Unauthorized_User2'], 403);
+                }
+            } else {
+                return response()->json(['error' => 'Este envio aun no tiene ganador'], 404);
+            }
+
+        }
 
         if ($userLogged->isAnAdmin() || ($userLogged->id == $idUsuario)) {
 
@@ -206,6 +340,7 @@ class UserEnviosController extends Controller
                 'lon_origen' => 'numeric',
                 'lat_destino' => 'numeric',
                 'lon_destino' => 'numeric',
+                'fecha_sug' => 'date',
                 'max_dias' => 'integer|min:0',
                 'fecha_fin' => 'date',
                 'valoracion' => 'integer|min:0|max:5',
@@ -222,6 +357,28 @@ class UserEnviosController extends Controller
                 return response()->json(['error' => 'Conflict_Request'], 409);
             }
             $envio = $user->envios()->where('id', $idEnvio)->first();
+
+            $estatus = $request->input('estatus_id');
+            if ($estatus == Config::get('constants.ESTATUS_CANCELADO')) {
+                $notification = new \App\Helpers\PushHandler;
+                $data = ['msg' => 'Su envio ha sido cancelado',
+                    'tipo' => Config::get('constants.NOTIF_ENVIO_CANCELADO'),
+                    'envio' => Envio::with('user')->find($envio->id)->toJson()];
+                $ofertas = $envio->ofertas;
+
+                foreach ($ofertas as $oferta) {
+                    $notification->generatePush($oferta->transportista, $data);
+                }
+                $notification->generatePush($envio->user, $data);
+            }
+
+            if ($request->input('valoracion') != $valoracionIni) {
+                $notification = new \App\Helpers\PushHandler;
+                $data = ['msg' => 'Han valorado sus servicios',
+                    'tipo' => Config::get('constants.NOTIF_ENVIO_FINALIZADO'),
+                    'envio' => Envio::with('user')->find($envio->id)->toJson()];
+                $notification->generatePush($envio->ganador()->transportista, $data);
+            }
             return response()->json(compact('envio'), 200);
         }
         return response()->json(['error' => 'Unauthorized_User'], 403);

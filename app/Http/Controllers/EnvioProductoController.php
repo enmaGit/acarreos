@@ -79,11 +79,36 @@ class EnvioProductoController extends Controller
         $idUsuario = $envio->user->id;
         if ($userLogged->isAnAdmin() || ($userLogged->id == $idUsuario)) {
 
+            if (Producto::where("producto_id", $request->input('producto_id'))
+                    ->where("envio_id", $idEnvio)
+                    ->count() > 0
+            ) {
+                $producto = Producto::where("producto_id", $request->input('producto_id'))
+                    ->where("envio_id", $idEnvio)
+                    ->first();
+
+                if ($request->file('photo') != null) {
+                    $imageName = 'envio_' . $envio->id .
+                        '_produc_' . $producto->id . '.' .
+                        $request->file('photo')->getClientOriginalExtension();
+                    if ($producto->foto != null) {
+                        File::delete(base_path() . '/public/imagenes/productos/', $imageName);
+                    }
+                    $request->file('photo')->move(
+                        base_path() . '/public/imagenes/productos/', $imageName
+                    );
+                    $producto->foto = 'http://acarreospanama.info/imagenes/productos/' . $imageName;
+                    $producto->save();
+                    return response()->json(compact('producto'), 200);
+                }
+                return response()->json(['error' => 'Bad request 1'], 400);
+            }
             $validator = Validator::make($request->all(), [
                 'producto_id' => 'required|exists:productos,id|unique:productos_envio,producto_id,NULL,NULL,envio_id,' . $idEnvio,
                 'cantidad' => 'integer|min:1',
                 'largo' => 'required|numeric|min:0.01',
                 'ancho' => 'required|numeric|min:0.01',
+                'descripcion' => 'required|max:255',
                 'alto' => 'required|numeric|min:0.01',
                 'peso' => 'required|numeric|min:0.01'
             ]);
@@ -99,9 +124,21 @@ class EnvioProductoController extends Controller
 
             $producto = $envio->productos()->save($producto);
 
-            $producto = Producto::where('envio_id',$idEnvio)
-                                        ->where('producto_id',$producto->producto_id)
-                                        ->with('tipoProducto')->first();
+            if ($request->file('photo') != null) {
+                $imageName = 'envio_' . $envio->id .
+                    '_produc_' . $producto->id . '.' .
+                    $request->file('photo')->getClientOriginalExtension();
+                $request->file('photo')->move(
+                    base_path() . '/public/imagenes/productos/', $imageName
+                );
+                $producto->foto = 'http://acarreospanama.info/imagenes/productos/' . $imageName;
+            }
+
+            $producto->save();
+
+            $producto = Producto::where('envio_id', $idEnvio)
+                ->where('producto_id', $producto->producto_id)
+                ->with('tipoProducto')->first();
 
             return Response::make(json_encode($producto), 201)->header('Location', 'http://acarreos.app/api/v1/envio/' . $idEnvio . '/producto' . $producto->producto_id)->header('Content-Type', 'application/json');
         }
@@ -193,6 +230,7 @@ class EnvioProductoController extends Controller
                 'cantidad' => 'integer|min:1',
                 'largo' => 'numeric|min:0.01',
                 'ancho' => 'numeric|min:0.01',
+                'descripcion' => 'max:255',
                 'alto' => 'numeric|min:0.01',
                 'peso' => 'numeric|min:0.01'
             ]);
@@ -207,6 +245,20 @@ class EnvioProductoController extends Controller
                 return response()->json(['error' => 'Conflict_Request'], 409);
             }
             $producto = $envio->productos()->where('producto_id', $idProducto)->first();
+            if ($request->file('photo') != null) {
+                $imageName = 'envio_' . $envio->id .
+                    '_produc_' . $producto->id . '.' .
+                    $request->file('photo')->getClientOriginalExtension();
+                if ($producto->foto != null) {
+                    File::delete(base_path() . '/public/imagenes/productos/', $imageName);
+                }
+                $request->file('photo')->move(
+                    base_path() . '/public/imagenes/productos/', $imageName
+                );
+                $producto->foto = 'http://acarreospanama.info/imagenes/productos/' . $imageName;
+                $producto->save();
+                return response()->json(compact('producto'), 201);
+            }
             return response()->json(compact('producto'), 200);
         }
         return response()->json(['error' => 'Unauthorized_User'], 403);
@@ -218,7 +270,8 @@ class EnvioProductoController extends Controller
      * @param  int $id
      * @return Response
      */
-    public function destroy($idEnvio, $idProducto)
+    public
+    function destroy($idEnvio, $idProducto)
     {
         //
         $userLogged = $this->getAuthenticatedUser();
@@ -261,7 +314,8 @@ class EnvioProductoController extends Controller
         return response()->json(['error' => 'Unauthorized_User'], 403);
     }
 
-    public function getAuthenticatedUser()
+    public
+    function getAuthenticatedUser()
     {
         try {
 

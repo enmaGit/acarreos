@@ -65,6 +65,9 @@ class UserTransporteController extends Controller
             $parameters['user_id'] = $idUsuario;
             $validator = Validator::make($parameters, [
                 'condicion' => 'required',
+                'placa' => 'required',
+                'poliza_compa' => 'required',
+                'poliza_numero' => 'required',
                 'transporte_id' => 'required|exists:tipo_transporte,id|unique:user_transporte,transporte_id,NULL,NULL,user_id,' . $idUsuario,
                 'user_id' => 'required|exists:users,id,tipo_user_id,3'
             ]);
@@ -77,8 +80,21 @@ class UserTransporteController extends Controller
             $user = User::find($idUsuario);
             $transporte = new Transporte();
             $transporte->condicion = $parameters['condicion'];
+            $transporte->placa = $parameters['placa'];
+            $transporte->poliza_compa = $parameters['poliza_compa'];
+            $transporte->poliza_numero = $parameters['poliza_numero'];
             $transporte->transporte_id = $parameters['transporte_id'];
+            if ($request->file('photo') != null) {
+                $imageName = 'user_' . $userLogged->id .
+                    '_trans_' . $parameters['transporte_id'] . '.' .
+                    $request->file('photo')->getClientOriginalExtension();
+                $request->file('photo')->move(
+                    base_path() . '/public/imagenes/transportes/', $imageName
+                );
+                $transporte->foto = 'http://acarreospanama.info/imagenes/transportes/' . $imageName;
+            }
             $nuevoTransporte = $user->transportes()->save($transporte);
+            $nuevoTransporte = $user->transportes()->where('transporte_id', $transporte->transporte_id)->with('tipoTransporte')->first();
 
             return Response::make(json_encode($nuevoTransporte), 201)->header('Location', 'http://acarreos.app/api/v1/transportista/' . $idUsuario . '/transporte' . $nuevoTransporte->id)->header('Content-Type', 'application/json');
         }
