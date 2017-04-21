@@ -11,5 +11,7 @@ bootstrap/cache/services.json
 .env.php
 .env
 
+public/imagenes
+
 # Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
 .rocketeer/
