@@ -60,16 +60,6 @@ class EnvioGanadorController extends Controller
         //
         $userLogged = $this->getAuthenticatedUser();
         $envio = Envio::find($idEnvio);
-        $oferta = Oferta::find($request->input('oferta_id'));
-
-        \Log::info('Costo: ', $oferta->precio_puja);
-        \Log::info('Comision: ', $envio->comision_final);
-        \Log::info('Total: ', $oferta->precio_puja);
-
-        $error = array(
-            'error' => 'No se encuentra un envio con ese codigo'
-        );
-        return response()->json($error, 404);
 
         if (!$envio) {
             $error = array(
@@ -95,8 +85,17 @@ class EnvioGanadorController extends Controller
                 'oferta_id' => 'required|exists:ofertas,id,envio_id,' . $idEnvio,
             ]);
 
+            if ($validator->fails()) {
+                $messages = $validator->errors();
+                return response()->json(['error' => $messages], 404);
+            }
+
+            $oferta = Oferta::find($request->input('oferta_id'));
+
+            $amount = $oferta->precio_puja * ($envio->comision_final / 100);
+
             try {
-              $paymentStatus = \App\Helpers\StripeHelper::generateCharge($stripeToken['mId'], 1000, 'porque si');
+              $paymentStatus = \App\Helpers\StripeHelper::generateCharge($stripeToken['mId'], $amount, 'Charge for shipment with id: ' . $envio->id);
             } catch (Exception $e) {
               $error = array(
                   'error' => 'No se pudo procesar el pago'
@@ -104,12 +103,7 @@ class EnvioGanadorController extends Controller
               return response()->json($error, 400);
             }
 
-            if ($validator->fails()) {
-                $messages = $validator->errors();
-                return response()->json(['error' => $messages], 404);
-            }
 
-            $oferta = Oferta::find($request->input('oferta_id'));
             $oferta->ganador = true;
             $envio->fecha_res = Carbon::now();
             $envio->estatus_id = Config::get('constants.ESTATUS_DESARROLLO');
