@@ -92,10 +92,12 @@ class EnvioGanadorController extends Controller
 
             $oferta = Oferta::find($request->input('oferta_id'));
 
-            $amount = $oferta->precio_puja * ($envio->comision_final / 100);
+            $comision = $oferta->precio_puja * ($envio->comision_final / 100);
+
+            $totalPrice = ($oferta->precio_puja + $comision) * 100;
 
             try {
-              $paymentStatus = \App\Helpers\StripeHelper::generateCharge($stripeToken['mId'], $amount, 'Charge for shipment with id: ' . $envio->id);
+              $paymentStatus = \App\Helpers\StripeHelper::generateCharge($stripeToken['mId'], $totalPrice, 'Charge for shipment with id: ' . $envio->id);
             } catch (Exception $e) {
               $error = array(
                   'error' => 'No se pudo procesar el pago'
