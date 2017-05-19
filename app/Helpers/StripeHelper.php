@@ -18,7 +18,7 @@ class StripeHelper
           "amount" => $amount,
           "currency" => "usd",
           "description" => $description,
-          "source" => $token,
+          "card" => $token,
         ));
     }
 
