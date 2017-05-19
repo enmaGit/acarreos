@@ -63,8 +63,8 @@ class EnvioGanadorController extends Controller
 
         $stripeToken = $request->all();
 
-        Log::info('Esta es la informacion del token: ' . $stripeToken);
-        
+        \Log::info('Esta es la informacion del token: ' . $stripeToken);
+
         return response()->json($error, 404);
         if (!$envio) {
             $error = array(
