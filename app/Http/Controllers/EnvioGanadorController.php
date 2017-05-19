@@ -61,6 +61,11 @@ class EnvioGanadorController extends Controller
         $userLogged = $this->getAuthenticatedUser();
         $envio = Envio::find($idEnvio);
 
+        $stripeToken = $request->all();
+
+        Log::info('Esta es la informacion del token: ' . $stripeToken);
+        
+        return response()->json($error, 404);
         if (!$envio) {
             $error = array(
                 'error' => 'No se encuentra un envio con ese codigo'
@@ -156,7 +161,7 @@ class EnvioGanadorController extends Controller
 
         if ($envio->fecha_res == null) {
             $error = array(
-                'error' => 'Este envío aun no tiene ganador'
+                'error' => 'Este envï¿½o aun no tiene ganador'
             );
             return response()->json($error, 404);
         }
@@ -211,7 +216,7 @@ class EnvioGanadorController extends Controller
 
         if ($envio->fecha_res == null) {
             $error = array(
-                'error' => 'Este envío aun no tiene ganador'
+                'error' => 'Este envï¿½o aun no tiene ganador'
             );
             return response()->json($error, 404);
         }
