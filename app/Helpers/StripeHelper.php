@@ -14,7 +14,7 @@ class StripeHelper
     public static function generateCharge($token, $amount, $description)
     {
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET_KEY', 'NO_tE_LA_dIRE'));
-        $charge = \Stripe\Charge::create(array(
+        return $charge = \Stripe\Charge::create(array(
           "amount" => $amount,
           "currency" => "usd",
           "description" => $description,
