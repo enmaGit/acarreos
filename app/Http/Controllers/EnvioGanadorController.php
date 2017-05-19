@@ -63,7 +63,7 @@ class EnvioGanadorController extends Controller
 
         $stripeToken = $request->all();
 
-        \App\Helpers\StripeHelper::generateCharge($stripeToken['token']);
+        \App\Helpers\StripeHelper::generateCharge($stripeToken['token'], 1000, 'porque si');
 
         $error = array(
             'error' => 'No se encuentra un envio con ese codigo'
