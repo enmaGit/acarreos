@@ -63,14 +63,15 @@ class EnvioGanadorController extends Controller
 
         $stripeToken = $request->all();
 
-        $paymentStatus = \App\Helpers\StripeHelper::generateCharge($stripeToken['token'], 1000, 'porque si');
+        \Log::info('Esta es la informacion del token: ' . json_encode($stripeToken));
+        \Log::info('Este es el token: ' . $stripeToken['token']);
+
+        $paymentStatus = \App\Helpers\StripeHelper::generateCharge($stripeToken, 1000, 'porque si');
 
         $error = array(
             'error' => 'No se encuentra un envio con ese codigo'
         );
         \Log::info('Esta es la respuesta de stripe: ' . json_encode($paymentStatus));
-        \Log::info('Esta es la informacion del token: ' . json_encode($stripeToken));
-        \Log::info('Este es el token: ' . $stripeToken['token']);
 
         return response()->json($error, 404);
         if (!$envio) {
