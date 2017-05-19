@@ -61,19 +61,6 @@ class EnvioGanadorController extends Controller
         $userLogged = $this->getAuthenticatedUser();
         $envio = Envio::find($idEnvio);
 
-        $stripeToken = $request->all();
-
-        \Log::info('Esta es la informacion del token: ' . json_encode($stripeToken));
-        \Log::info('Este es el token: ' . $stripeToken['token']);
-
-        $paymentStatus = \App\Helpers\StripeHelper::generateCharge($stripeToken['mId'], 1000, 'porque si');
-
-        $error = array(
-            'error' => 'No se encuentra un envio con ese codigo'
-        );
-        \Log::info('Esta es la respuesta de stripe: ' . json_encode($paymentStatus));
-
-        return response()->json($error, 404);
         if (!$envio) {
             $error = array(
                 'error' => 'No se encuentra un envio con ese codigo'
@@ -81,11 +68,13 @@ class EnvioGanadorController extends Controller
             return response()->json($error, 404);
         }
 
+        $stripeToken = $request->all();
+
         if ($envio->ofertas()->where('ganador', 1)->count() > 0) {
             $error = array(
                 'error' => 'Este envio ya tiene ganador'
             );
-            return response()->json($error, 404);
+            return response()->json($error, 400);
         }
 
         $idUsuario = $envio->user->id;
@@ -95,6 +84,15 @@ class EnvioGanadorController extends Controller
             $validator = Validator::make($request->all(), [
                 'oferta_id' => 'required|exists:ofertas,id,envio_id,' . $idEnvio,
             ]);
+
+            try {
+              $paymentStatus = \App\Helpers\StripeHelper::generateCharge($stripeToken['mId'], 1000, 'porque si');
+            } catch (Exception $e) {
+              $error = array(
+                  'error' => 'No se pudo procesar el pago'
+              );
+              return response()->json($error, 400);
+            }
 
             if ($validator->fails()) {
                 $messages = $validator->errors();
