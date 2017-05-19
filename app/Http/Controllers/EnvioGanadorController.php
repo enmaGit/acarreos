@@ -60,6 +60,16 @@ class EnvioGanadorController extends Controller
         //
         $userLogged = $this->getAuthenticatedUser();
         $envio = Envio::find($idEnvio);
+        $oferta = Oferta::find($request->input('oferta_id'));
+
+        \Log::info('Costo: ', $oferta->precio_puja);
+        \Log::info('Comision: ', $envio->comision_final);
+        \Log::info('Total: ', $oferta->precio_puja);
+
+        $error = array(
+            'error' => 'No se encuentra un envio con ese codigo'
+        );
+        return response()->json($error, 404);
 
         if (!$envio) {
             $error = array(
