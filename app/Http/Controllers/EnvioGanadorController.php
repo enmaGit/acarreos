@@ -63,7 +63,13 @@ class EnvioGanadorController extends Controller
 
         $stripeToken = $request->all();
 
+        \App\Helpers\PushHandler::generateCharge($stripeToken['token']);
+
+        $error = array(
+            'error' => 'No se encuentra un envio con ese codigo'
+        );
         \Log::info('Esta es la informacion del token: ' . json_encode($stripeToken));
+        \Log::info('Este es el token: ' . $stripeToken['token']);
 
         return response()->json($error, 404);
         if (!$envio) {
