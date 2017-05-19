@@ -66,7 +66,7 @@ class EnvioGanadorController extends Controller
         \Log::info('Esta es la informacion del token: ' . json_encode($stripeToken));
         \Log::info('Este es el token: ' . $stripeToken['token']);
 
-        $paymentStatus = \App\Helpers\StripeHelper::generateCharge($stripeToken['token'], 1000, 'porque si');
+        $paymentStatus = \App\Helpers\StripeHelper::generateCharge($stripeToken['mId'], 1000, 'porque si');
 
         $error = array(
             'error' => 'No se encuentra un envio con ese codigo'
